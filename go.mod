@@ -8,7 +8,7 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
-	github.com/gogo/protobuf v1.2.1 // indirect
+	github.com/golang-migrate/migrate/v4 v4.2.5
 	github.com/gorilla/handlers v1.4.0
 	github.com/gotopia/insight v0.1.0
 	github.com/gotopia/ripper v0.4.1
@@ -17,7 +17,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/grpc-ecosystem/grpc-gateway v1.8.5
 	github.com/pkg/errors v0.8.1
-	github.com/sirupsen/logrus v1.4.1 // indirect
 	github.com/spf13/viper v1.3.2
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible // indirect

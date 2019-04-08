@@ -8,6 +8,11 @@ import (
 
 	// import MySQL driver.
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+
+	// import migrate source file.
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gotopia/more/config"
 	"github.com/volatiletech/sqlboiler/boil"
 )
@@ -15,8 +20,8 @@ import (
 var database *sql.DB
 
 func init() {
-	driver := config.DB.Driver()
-	if driver != "mysql" {
+	name := config.DB.Name()
+	if name != "mysql" {
 		err := errors.New("only mysql is supported now")
 		panic(err.Error())
 	}
@@ -27,7 +32,7 @@ func init() {
 		config.DB.Port(),
 		config.DB.Database(),
 	)
-	db, err := sql.Open(driver, dataSource)
+	db, err := sql.Open(name, dataSource)
 	if db == nil || err != nil {
 		err = errors.Wrap(err, "failed to open database")
 		panic(err)
@@ -36,6 +41,24 @@ func init() {
 	if err != nil {
 		err = errors.Wrap(err, "failed to connect database")
 		panic(err)
+	}
+	if config.DB.Migrate.Enable() {
+		driver, err := mysql.WithInstance(db, &mysql.Config{
+			MigrationsTable: config.DB.Migrate.Table(),
+		})
+		if err != nil {
+			err = errors.Wrap(err, "failed to get db driver")
+			panic(err)
+		}
+		m, err := migrate.NewWithDatabaseInstance(config.DB.Migrate.Source(), name, driver)
+		if err != nil {
+			err = errors.Wrap(err, "failed to init migrate instance")
+			panic(err)
+		}
+		if err := m.Up(); err != nil {
+			err = errors.Wrap(err, "failed to migrate")
+			panic(err)
+		}
 	}
 	database = db
 	boil.DebugMode = config.Development()

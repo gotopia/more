@@ -1,12 +1,15 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
 var config = viper.New()
 
 func init() {
+	config.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	config.SetEnvPrefix("more")
 	config.AutomaticEnv()
 
