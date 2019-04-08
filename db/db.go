@@ -55,7 +55,7 @@ func init() {
 			err = errors.Wrap(err, "failed to init migrate instance")
 			panic(err)
 		}
-		if err := m.Up(); err != nil {
+		if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 			err = errors.Wrap(err, "failed to migrate")
 			panic(err)
 		}
