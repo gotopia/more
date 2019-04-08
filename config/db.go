@@ -1,20 +1,28 @@
 package config
 
 func init() {
-	config.SetDefault("db.driver", "mysql")
+	config.SetDefault("db.name", "mysql")
 	config.SetDefault("db.address", "localhost")
 	config.SetDefault("db.port", 3306)
 	config.SetDefault("db.username", "root")
+	config.SetDefault("db.migrate.enable", true)
+	config.SetDefault("db.migrate.source", "file://db/migrate")
+	config.SetDefault("db.migrate.table", "schema_migrations")
 }
 
-type db struct{}
+type migrate struct {
+}
+
+type db struct {
+	Migrate migrate
+}
 
 // DB returns the collection of the db config.
 var DB = &db{}
 
 // Driver returns the driver of db.
-func (d *db) Driver() string {
-	return config.GetString("db.driver")
+func (d *db) Name() string {
+	return config.GetString("db.name")
 }
 
 // Address returns the address of db.
@@ -40,4 +48,16 @@ func (d *db) Username() string {
 // DB returns the password of db.
 func (d *db) Password() string {
 	return config.GetString("db.password")
+}
+
+func (m *migrate) Enable() bool {
+	return config.GetBool("db.migrate.enable")
+}
+
+func (m *migrate) Source() string {
+	return config.GetString("db.migrate.source")
+}
+
+func (m *migrate) Table() string {
+	return config.GetString("db.migrate.table")
 }
