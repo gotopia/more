@@ -5,6 +5,9 @@ func init() {
 	config.SetDefault("db.address", "localhost")
 	config.SetDefault("db.port", 3306)
 	config.SetDefault("db.username", "root")
+	config.SetDefault("db.collation", "utf8_general_ci")
+	config.SetDefault("db.loc", "Local")
+	config.SetDefault("db.parse_time", true)
 	config.SetDefault("db.migrate.enable", true)
 	config.SetDefault("db.migrate.source", "file://db/migrate")
 	config.SetDefault("db.migrate.table", "schema_migrations")
@@ -48,6 +51,21 @@ func (d *db) Username() string {
 // DB returns the password of db.
 func (d *db) Password() string {
 	return config.GetString("db.password")
+}
+
+// DB returns the collation of db.
+func (d *db) Collation() string {
+	return config.GetString("db.collation")
+}
+
+// DB returns the loc of db.
+func (d *db) Loc() string {
+	return config.GetString("db.loc")
+}
+
+// DB returns the parse_time of db.
+func (d *db) ParseTime() bool {
+	return config.GetBool("db.parse_time")
 }
 
 func (m *migrate) Enable() bool {

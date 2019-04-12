@@ -25,12 +25,15 @@ func init() {
 		err := errors.New("only mysql is supported now")
 		panic(err.Error())
 	}
-	dataSource := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?parseTime=true",
+	dataSource := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?collation=%v&loc=%v&parseTime=%v",
 		config.DB.Username(),
 		config.DB.Password(),
 		config.DB.Address(),
 		config.DB.Port(),
 		config.DB.Database(),
+		config.DB.Collation(),
+		config.DB.Loc(),
+		config.DB.ParseTime(),
 	)
 	db, err := sql.Open(name, dataSource)
 	if db == nil || err != nil {
