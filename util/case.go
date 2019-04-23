@@ -1,14 +1,14 @@
 package util
 
 import (
-	"strings"
+	"github.com/stoewer/go-strcase"
 )
 
-// ToLowerSlice converts string slice to lowercase.
-func ToLowerSlice(s []string) []string {
+// ToSnakeSlice converts string slice to lowercase.
+func ToSnakeSlice(s []string) []string {
 	ls := make([]string, len(s))
 	for i := 0; i < len(s); i++ {
-		ls[i] = strings.ToLower(s[i])
+		ls[i] = strcase.SnakeCase(s[i])
 	}
 	return ls
 }

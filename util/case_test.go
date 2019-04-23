@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestToLowerSlice(t *testing.T) {
+func TestToSnakeSlice(t *testing.T) {
 	type args struct {
 		s []string
 	}
@@ -14,12 +14,16 @@ func TestToLowerSlice(t *testing.T) {
 		args args
 		want []string
 	}{
-		{"string slice should be converted to lowercase", args{s: []string{"Username", "Password"}}, []string{"username", "password"}},
+		{
+			"string slice should be converted to lowercase", args{
+				s: []string{"Username", "Password", "IsBot"},
+			}, []string{"username", "password", "is_bot"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ToLowerSlice(tt.args.s); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToLowerSlice() = %v, want %v", got, tt.want)
+			if got := ToSnakeSlice(tt.args.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ToSnakeSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}
