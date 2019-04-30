@@ -20,7 +20,7 @@ require (
 	github.com/spf13/viper v1.3.2
 	github.com/stoewer/go-strcase v1.0.2
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
-	github.com/volatiletech/null v8.0.0+incompatible // indirect
+	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.2.0+incompatible
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
