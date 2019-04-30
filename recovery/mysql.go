@@ -30,6 +30,7 @@ func mySQLErrorToStatus(err *mysql.MySQLError) *status.Status {
 		r := sin.NewBadRequest(fv)
 		s, _ = s.WithDetails(r.Serialize())
 		return s
+	case 1406:
 	default:
 		return internalToStatus(err)
 	}
