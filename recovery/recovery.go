@@ -2,8 +2,9 @@ package recovery
 
 import (
 	"database/sql"
+
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gotopia/insight/parser"
 	"github.com/gotopia/ripper"

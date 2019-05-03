@@ -23,7 +23,7 @@ type db struct {
 // DB returns the collection of the db config.
 var DB = &db{}
 
-// Driver returns the driver of db.
+// Name returns the name of db driver.
 func (d *db) Name() string {
 	return config.GetString("db.name")
 }
@@ -38,32 +38,32 @@ func (d *db) Port() int {
 	return config.GetInt("db.port")
 }
 
-// DB returns the address of db.
+// Database returns the address of database.
 func (d *db) Database() string {
 	return config.GetString("db.database")
 }
 
-// DB returns the username of db.
+// Username returns the username of db.
 func (d *db) Username() string {
 	return config.GetString("db.username")
 }
 
-// DB returns the password of db.
+// password returns the password of db.
 func (d *db) Password() string {
 	return config.GetString("db.password")
 }
 
-// DB returns the collation of db.
+// Collation returns the collation of db.
 func (d *db) Collation() string {
 	return config.GetString("db.collation")
 }
 
-// DB returns the loc of db.
+// Loc returns the loc of db.
 func (d *db) Loc() string {
 	return config.GetString("db.loc")
 }
 
-// DB returns the parse_time of db.
+// ParseTime returns the parse_time of db.
 func (d *db) ParseTime() bool {
 	return config.GetBool("db.parse_time")
 }
