@@ -7,14 +7,16 @@ import (
 	"github.com/gotopia/more/auth"
 	"github.com/gotopia/more/config"
 	"github.com/gotopia/more/recovery"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	"github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 )
 
 func runServer(ctx context.Context, register func(*grpc.Server)) error {
@@ -33,6 +35,7 @@ func runServer(ctx context.Context, register func(*grpc.Server)) error {
 
 	s := newServer()
 	register(s)
+	grpc_prometheus.Register(s)
 
 	go func() {
 		defer func() {
@@ -47,17 +50,19 @@ func newServer() *grpc.Server {
 	return grpc.NewServer(
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 			grpc_ctxtags.StreamServerInterceptor(),
+			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(zap.L()),
 			grpc_zap.PayloadStreamServerInterceptor(zap.L(), payloadLoggingDecider),
-			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 			grpc_auth.StreamServerInterceptor(auth.Func),
+			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_ctxtags.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(zap.L()),
 			grpc_zap.PayloadUnaryServerInterceptor(zap.L(), payloadLoggingDecider),
-			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 			grpc_auth.UnaryServerInterceptor(auth.Func),
+			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 		)),
 	)
 }

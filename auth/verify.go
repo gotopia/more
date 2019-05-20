@@ -6,8 +6,8 @@ import (
 
 	"github.com/gotopia/more/config"
 	"github.com/gotopia/watcher"
-	"github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 )
 
 var authKey = struct{}{}
@@ -25,15 +25,15 @@ func Func(ctx context.Context) (context.Context, error) {
 func jwtAuthFunc(ctx context.Context) (context.Context, error) {
 	token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	sub, err := watcher.Verify(token, config.Auth.Issuer())
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	grpc_ctxtags.Extract(ctx).Set("auth.sub", sub)
 	ctx = context.WithValue(ctx, authKey, sub)
-	return ctx, err
+	return ctx, nil
 }
 
 // CurrentUserID retrieves the current user_id from context. Only works when sub is an integer.
