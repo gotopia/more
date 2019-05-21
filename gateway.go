@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/gotopia/more/config"
 
@@ -18,19 +19,24 @@ type registerHandlerFromEndpointFunc func(ctx context.Context, mux *runtime.Serv
 func runGateway(ctx context.Context, registers ...registerHandlerFromEndpointFunc) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
 
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.Handler())
+
+	gmux := runtime.NewServeMux()
+	opts := []grpc.DialOption{grpc.WithInsecure()}
 	for _, register := range registers {
-		if err := register(ctx, mux, config.Server.Address(), opts); err != nil {
+		if err := register(ctx, gmux, config.Server.Address(), opts); err != nil {
 			return errors.Wrap(err, "failed to register handler from end point")
 		}
 	}
+	mux.Handle("/", gmux)
 
 	httpHandler := handlers.CORS(
 		handlers.AllowedOrigins(config.Cors.Origins()),
 		handlers.AllowedMethods(config.Cors.Methods()),
 		handlers.AllowedHeaders(config.Cors.Headers()),
 	)(mux)
+
 	return http.ListenAndServe(config.Gateway.Address(), httpHandler)
 }

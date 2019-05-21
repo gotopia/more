@@ -15,8 +15,10 @@ require (
 	github.com/gotopia/sin v0.2.0
 	github.com/gotopia/watcher v0.1.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.8.5
 	github.com/pkg/errors v0.8.1
+	github.com/prometheus/client_golang v0.8.0
 	github.com/spf13/viper v1.3.2
 	github.com/stoewer/go-strcase v1.0.2
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
