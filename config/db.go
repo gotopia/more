@@ -8,7 +8,7 @@ func init() {
 	config.SetDefault("db.collation", "utf8_general_ci")
 	config.SetDefault("db.loc", "Local")
 	config.SetDefault("db.parse_time", true)
-	config.SetDefault("db.migrate.enable", true)
+	config.SetDefault("db.migrate.enabled", false)
 	config.SetDefault("db.migrate.source", "file://db/migrate")
 	config.SetDefault("db.migrate.table", "schema_migrations")
 }
@@ -68,14 +68,17 @@ func (d *db) ParseTime() bool {
 	return config.GetBool("db.parse_time")
 }
 
-func (m *migrate) Enable() bool {
-	return config.GetBool("db.migrate.enable")
+// Enabled checks whether the migrate is enabled.
+func (m *migrate) Enabled() bool {
+	return config.GetBool("db.migrate.enabled")
 }
 
+// Source returns the source of migrate.
 func (m *migrate) Source() string {
 	return config.GetString("db.migrate.source")
 }
 
+// Table returns the table of migrate.
 func (m *migrate) Table() string {
 	return config.GetString("db.migrate.table")
 }

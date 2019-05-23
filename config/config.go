@@ -31,3 +31,13 @@ func Env() string {
 func Development() bool {
 	return Env() == "development"
 }
+
+// QA checks whether the server is running in qa environment.
+func QA() bool {
+	return Env() == "test" || Env() == "staging"
+}
+
+// Production checks whether the server is running in production environment.
+func Production() bool {
+	return Env() == "production"
+}
