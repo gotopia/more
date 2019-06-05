@@ -1,8 +1,6 @@
 package client
 
 import (
-	"context"
-
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
@@ -29,11 +27,11 @@ func DefaultDialOptions() []grpc.DialOption {
 }
 
 // New returns a new gRPC client connection.
-func New(ctx context.Context, target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func New(target string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	if opts == nil {
 		opts = DefaultDialOptions()
 	}
-	conn, err := grpc.DialContext(ctx, target, opts...)
+	conn, err := grpc.Dial(target, opts...)
 	if err != nil {
 		err = errors.Wrapf(err, "failed to create gRPC client connection to the given target: %v", target)
 	}
