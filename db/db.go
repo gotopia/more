@@ -23,7 +23,7 @@ func init() {
 	name := config.DB.Name()
 	if name != "mysql" {
 		err := errors.New("only mysql is supported now")
-		panic(err.Error())
+		panic(err)
 	}
 	dataSource := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?collation=%v&loc=%v&parseTime=%v",
 		config.DB.Username(),
@@ -45,7 +45,7 @@ func init() {
 		err = errors.Wrap(err, "failed to connect database")
 		panic(err)
 	}
-	if config.DB.Migrate.Enable() {
+	if config.DB.Migrate.Enabled() {
 		driver, err := mysql.WithInstance(db, &mysql.Config{
 			MigrationsTable: config.DB.Migrate.Table(),
 		})
