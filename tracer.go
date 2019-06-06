@@ -1,19 +1,18 @@
 package more
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/gotopia/more/config"
 	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"github.com/pkg/errors"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
 	"github.com/uber/jaeger-client-go/zipkin"
 	"github.com/uber/jaeger-lib/metrics"
-	"google.golang.org/grpc/metadata"
 )
 
 func init() {
@@ -65,22 +64,23 @@ func init() {
 	}
 }
 
-func injectHeadersIntoMetadata(ctx context.Context, req *http.Request) metadata.MD {
-	otHeaders := []string{
-		"x-request-id",
-		"x-b3-traceid",
-		"x-b3-spanid",
-		"x-b3-parentspanid",
-		"x-b3-sampled",
-		"x-b3-flags",
-		"x-ot-span-context",
-		"uber-trace-id",
-	}
-	pairs := []string{}
-	for _, h := range otHeaders {
-		if v := req.Header.Get(h); len(v) > 0 {
-			pairs = append(pairs, h, v)
+var grpcGatewayTag = opentracing.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
+
+func tracingWrapper(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parentSpanContext, err := opentracing.GlobalTracer().Extract(
+			opentracing.HTTPHeaders,
+			opentracing.HTTPHeadersCarrier(r.Header))
+		if err == nil || err == opentracing.ErrSpanContextNotFound {
+			serverSpan := opentracing.GlobalTracer().StartSpan(
+				r.URL.String(),
+				// this is magical, it attaches the new span to the parent parentSpanContext, and creates an unparented one if empty.
+				ext.RPCServerOption(parentSpanContext),
+				grpcGatewayTag,
+			)
+			r = r.WithContext(opentracing.ContextWithSpan(r.Context(), serverSpan))
+			defer serverSpan.Finish()
 		}
-	}
-	return metadata.Pairs(pairs...)
+		h.ServeHTTP(w, r)
+	})
 }

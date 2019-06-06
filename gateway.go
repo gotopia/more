@@ -23,9 +23,7 @@ func runGateway(ctx context.Context, registers ...registerHandlerFromEndpointFun
 
 	mux.Handle("/metrics", promhttp.Handler())
 
-	gmux := runtime.NewServeMux(
-		runtime.WithMetadata(injectHeadersIntoMetadata),
-	)
+	gmux := runtime.NewServeMux()
 	for _, register := range registers {
 		if err := register(ctx, gmux, config.Server.Address(), client.DefaultDialOptions()); err != nil {
 			return errors.Wrap(err, "failed to register handler from end point")
@@ -39,5 +37,5 @@ func runGateway(ctx context.Context, registers ...registerHandlerFromEndpointFun
 		handlers.AllowedHeaders(config.Cors.Headers()),
 	)(mux)
 
-	return http.ListenAndServe(config.Gateway.Address(), httpHandler)
+	return http.ListenAndServe(config.Gateway.Address(), tracingWrapper(httpHandler))
 }
