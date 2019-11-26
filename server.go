@@ -17,6 +17,7 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 )
 
@@ -56,6 +57,7 @@ func newServer() *grpc.Server {
 			grpc_zap.StreamServerInterceptor(zap.L()),
 			grpc_zap.PayloadStreamServerInterceptor(zap.L(), payloadLoggingDecider),
 			grpc_auth.StreamServerInterceptor(auth.Func),
+			grpc_validator.StreamServerInterceptor(),
 			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 		)),
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
@@ -65,6 +67,7 @@ func newServer() *grpc.Server {
 			grpc_zap.UnaryServerInterceptor(zap.L()),
 			grpc_zap.PayloadUnaryServerInterceptor(zap.L(), payloadLoggingDecider),
 			grpc_auth.UnaryServerInterceptor(auth.Func),
+			grpc_validator.UnaryServerInterceptor(),
 			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(recovery.Handler)),
 		)),
 	)
