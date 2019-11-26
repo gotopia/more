@@ -3,7 +3,6 @@ package recovery
 import (
 	"database/sql"
 
-	"github.com/dgrijalva/jwt-go"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gotopia/insight/parser"
@@ -39,8 +38,6 @@ func handleError(err error) error {
 
 func handleTypedError(err error) error {
 	switch te := errors.Cause(err).(type) {
-	case *jwt.ValidationError:
-		return status.New(codes.Unauthenticated, te.Error()).Err()
 	case *mysql.MySQLError:
 		return mySQLErrorToStatus(te).Err()
 	case validation.Errors:

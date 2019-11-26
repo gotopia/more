@@ -4,6 +4,9 @@ import (
 	"context"
 	"strconv"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/gotopia/more/config"
 	"github.com/gotopia/watcher"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -25,11 +28,11 @@ func Func(ctx context.Context) (context.Context, error) {
 func jwtAuthFunc(ctx context.Context) (context.Context, error) {
 	token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 	if err != nil {
-		return nil, err
+		return nil, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 	sub, err := watcher.Verify(token, config.Auth.Issuer())
 	if err != nil {
-		return nil, err
+		return nil, status.New(codes.Unauthenticated, err.Error()).Err()
 	}
 	grpc_ctxtags.Extract(ctx).Set("auth.sub", sub)
 	ctx = context.WithValue(ctx, authKey, sub)
