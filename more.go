@@ -15,3 +15,8 @@ func RunServer(ctx context.Context, register func(*grpc.Server)) error {
 func RunGateway(ctx context.Context, registers ...registerHandlerFromEndpointFunc) error {
 	return runGateway(ctx, registers...)
 }
+
+// RegisterInterceptor register an interceptor.
+func RegisterInterceptor(identifier string, streamServerInterceptor grpc.StreamServerInterceptor, unaryServerInterceptor grpc.UnaryServerInterceptor) {
+	registerInterceptor(identifier, streamServerInterceptor, unaryServerInterceptor)
+}
