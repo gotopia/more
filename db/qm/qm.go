@@ -4,6 +4,9 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
+// QueryMod modifies a query object.
+type QueryMod qm.QueryMod
+
 // Where allows you to specify a where clause for your statement
 func Where(clause string, args ...interface{}) qm.QueryMod {
 	if clause == "" {
@@ -101,4 +104,9 @@ func Offset(offset int) qm.QueryMod {
 // For inserts a concurrency locking clause at the end of your statement
 func For(clause string) qm.QueryMod {
 	return qm.For(clause)
+}
+
+// InnerJoin on another table
+func InnerJoin(clause string, args ...interface{}) qm.QueryMod {
+	return qm.InnerJoin(clause, args...)
 }
